@@ -1,0 +1,56 @@
+- name: Publish the challenge to AWS Route 53 DNS
+  amazon.aws.route53:
+    zone: "{{nsupdate_zone}}"        
+    record:  "{{item.key}}"           
+    value: "\"{{ item.value[0] }}\""            
+    type: 'TXT'                       
+    ttl: 1800                            
+    state: present                      
+  with_dict: "{{ acme_data.challenge_data_dns }}"
+  when: acme_data is changed
+  environment:
+      AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+      AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+      AWS_DEFAULT_REGION: "{{ lookup('env', 'AWS_DEFAULT_REGION') }}"
+
+- name: Wait a bit so that DNS replication happens
+  pause:
+    seconds: 60
+  when: acme_data is changed
+
+- name: Get certificate
+  acme_certificate:
+    account_email: "{{cert.email_address}}"
+    account_key: "/opt/letsencrypt_certificates/{{cert_name}}/letsencrypt_account.pem"
+    acme_directory: "{{acme_directory}}"
+    acme_version: 2
+    challenge: dns-01
+    chain_dest:  "/opt/letsencrypt_certificates/{{cert_name}}/cert_chain/intermediate.pem" # Sits between your domain certificate and the root certificate.
+    csr: "/opt/letsencrypt_certificates/{{cert_name}}/{{cert_name}}.csr"
+    dest: "/opt/letsencrypt_certificates/{{cert_name}}/cert_chain/cert.pem"  # The SSL certificate issued by the CA. Sits at the bottom of the chain and is specific to your domain
+    terms_agreed: yes
+    remaining_days: "{{remaining_days}}"
+    data: "{{acme_data}}"
+  when: acme_data is changed
+
+- name: Remove the challenge from AWS Route 53 DNS
+  amazon.aws.route53:
+    zone: "{{nsupdate_zone}}"        
+    record:  "{{item.key}}"           
+    value: "\"{{ item.value[0] }}\""            
+    type: 'TXT'                       
+    ttl: 1800                            
+    state: absent                      
+  with_dict: "{{ acme_data.challenge_data_dns }}"
+  when: acme_data is defined
+  environment:
+      AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+      AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+      AWS_DEFAULT_REGION: "{{ lookup('env', 'AWS_DEFAULT_REGION') }}"
+
+
+- name: Concatenate cert.pem and intermediate.pem into a single file
+  assemble:
+    src: "/opt/letsencrypt_certificates/{{cert_name}}/cert_chain"
+    dest: "/opt/letsencrypt_certificates/{{cert_name}}/cert_chain/fullchain.crt"
+  become: yes

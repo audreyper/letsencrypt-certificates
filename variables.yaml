@@ -1,0 +1,14 @@
+
+remaining_days: 100
+nsupdate_zone: 'example.com'
+acme_directory: https://acme-v02.api.letsencrypt.org/directory
+# staging directory: https://acme-staging-v02.api.letsencrypt.org/directory 
+cert_name: www.example.com
+intermediate_path: path/to/intermediate/cert
+cert:
+  common_name: 'wwww.example.com'
+  organization_name: EXAMPLE
+  email_address: example@gmail.com
+user: audrey
+
+

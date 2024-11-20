@@ -1,0 +1,37 @@
+- name: include vars file
+  include_vars: "{{ playbook_dir }}/variables.yaml"
+
+- name: Create RSA key to be used to manage the Let's Encrypt account securely and authenticating API requests
+  openssl_privatekey:
+    path: "/opt/letsencrypt_certificates/{{ cert_name }}/letsencrypt_account.pem" 
+    size: 4096
+    type: RSA
+  become: true
+
+- name: Set permissions on the RSA key file
+  file:
+    path: "/opt/letsencrypt_certificates/{{ cert_name }}/letsencrypt_account.pem"
+    mode: '0600'
+    owner: "{{ user }}"
+    group: "{{ user }}"
+  become: true
+
+- name: Create RSA key to be used to securely sign the CSR, prove domain ownership, and enable encrypted communication in TLS/SSL connections.
+  openssl_privatekey:
+    path: "/opt/letsencrypt_certificates/{{ cert_name }}/privkey.pem"
+    size: 4096
+    type: RSA
+
+- name: report cert value
+  debug:
+    var: cert
+
+- name: Generate CSR for Certificate Request with Domain and Organization Details
+  openssl_csr:
+    path: "/opt/letsencrypt_certificates/{{ cert_name }}/{{ cert_name }}.csr"
+    privatekey_path: "/opt/letsencrypt_certificates/{{ cert_name }}/privkey.pem"
+    country_name: CA
+    state_or_province_name: BC
+    organization_name: "{{ cert.organization_name }}"
+    email_address: "{{ cert.email_address }}"
+    common_name: "{{ cert.common_name }}"

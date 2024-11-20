@@ -1,0 +1,28 @@
+
+- name: Install dependencies and prepare directories
+  hosts: myhost
+  gather_facts: false
+  become: yes
+  roles:
+    - pre_requisites
+
+- name: Handle the creation of private keys and certificate signing requests (CSRs)
+  hosts: myhost
+  gather_facts: false
+  become: yes
+  roles:
+    - certificate_creation
+
+- name: Manage ACME challenges and certificate retrieval
+  hosts: myhost
+  gather_facts: false
+  become: yes
+  roles:
+    - acme_challenge
+
+- name: Manage DNS records for challenge publishing and removal
+  hosts: myhost
+  gather_facts: false
+  become: yes
+  roles:
+    - dns_update

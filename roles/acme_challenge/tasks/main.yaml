@@ -1,0 +1,24 @@
+- name: include vars file
+  include_vars: "{{ playbook_dir }}/variables.yaml"
+
+- name: Get ACME challenge
+  acme_certificate:
+    account_email: "{{ cert.email_address }}"
+    account_key: "/opt/letsencrypt_certificates/{{ cert_name }}/letsencrypt_account.pem"
+    acme_directory: "{{ acme_directory }}"
+    acme_version: 2
+    challenge: dns-01
+    chain_dest:  "/opt/letsencrypt_certificates/{{ cert_name }}/intermediate.pem"
+    csr: "/opt/letsencrypt_certificates/{{ cert_name }}/{{ cert_name }}.csr"
+    dest: "/opt/letsencrypt_certificates/{{ cert_name }}/cert.pem" # The SSL certificate issued by the CA.
+    terms_agreed: yes
+    remaining_days: "{{ remaining_days }}"
+  register: acme_data
+
+- debug:
+    var: acme_data
+
+- name: Wait a bit so that DNS replication happens
+  pause:
+    seconds: 60
+  when: acme_data is changed

@@ -1,0 +1,34 @@
+- name: include vars file
+  include_vars: "{{ playbook_dir }}/variables.yaml"
+
+- name: Update apt cache
+  become: yes
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+- name: install required modules
+  become: yes
+  apt:
+    state: present
+    name:
+    - python3-openssl
+    - openssl
+    - python3-boto3
+
+- name: Ensure Ansible keys directory exists
+  file:
+    path: "/opt/letsencrypt_certificates/{{ cert_name }}"
+    state: directory
+    mode: '0700'
+    owner: "{{ user }}"
+    group: "{{ user }}"
+  become: true
+
+- name: Ensure Ansible keys directory exists
+  file:
+    path: "/opt/letsencrypt_certificates/{{ cert_name }}/cert_chain"
+    state: directory
+    mode: '0700'
+    owner: "{{ user }}"
+    group: "{{ user }}"
+  become: true
