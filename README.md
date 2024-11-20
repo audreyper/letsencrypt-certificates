@@ -32,18 +32,6 @@ The playbook is divided into multiple roles, each focusing on a specific task:
 
 The playbook uses AWS API for DNS updates, so ensure that your AWS credentials are correctly set. If you're using a different DNS provider, you'll need to modify the dns_update role to support it.
 
-Ensure you have the correct folder structure for the playbook, roles, and configuration files:
-
-.
-├── inventory.ini
-├── site.yaml
-├── roles/
-│   ├── pre_requisites/tasks/main.yaml
-│   ├── certificate_creation/tasks/main.yaml
-│   ├── acme_challenge/tasks/main.yaml
-│   └── dns_update/tasks/main.yaml
-└── variables.yaml
-
 ## Usage
 
 To use this playbook, follow these steps:
