@@ -20,13 +20,13 @@ The playbook is divided into multiple roles, each focusing on a specific task:
 
 ## Setup
 
-### 1. In the `variables.yaml` file, set the variables based on your need.
+ 1. In the `variables.yaml` file, set the variables based on your need.
 
-### 2. In the inventory.ini file, set the target server IP address and user.
+ 2. In the inventory.ini file, set the target server IP address and user.
 
-### 3. This playbook interacts with AWS for DNS updates. Set your AWS credentials as environment variables before running the playbook.
+ 3. This playbook interacts with AWS for DNS updates. Set your AWS credentials as environment variables before running the playbook.
 
-### 4. Run ansible-playbook -i inventory.ini site.yml
+ 4. Run ansible-playbook -i inventory.ini site.yml
 
 ## Notes
 
@@ -42,10 +42,10 @@ To use this playbook, follow these steps:
 
 `git clone https://github.com/audreyper/letsencrypt-certificates.git`
 
-Navigate to the directory containing the playbook:
+3. Navigate to the directory containing the playbook:
 
 `cd <playbook-directory>`
 
-Run the playbook:
+4. Run the playbook:
 
 `ansible-playbook playbook.yaml -i inventory.ini`
