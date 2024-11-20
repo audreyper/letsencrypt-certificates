@@ -1,4 +1,4 @@
-#Ansible Playbook for Let's Encrypt SSL Certificate Requests
+# Ansible Playbook for Let's Encrypt SSL Certificate Requests
 
 This Ansible playbook automates the request and management of SSL certificates from Let's Encrypt using the ACME protocol. It helps you set up your environment, create private keys and CSRs, handle DNS challenges for certificate validation, and manage the certificate retrieval process.
 
